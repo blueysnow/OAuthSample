@@ -1,10 +1,10 @@
-{
-  "profiles": {
-    "OAuthWinUI (Package)": {
-      "commandName": "MsixPackage"
-    },
-    "OAuthWinUI (Unpackaged)": {
-      "commandName": "Project"
+﻿{
+    "profiles": {
+      "OAuthWinUI (Package)": {
+        "commandName": "MsixPackage"
+      },
+      "OAuthWinUI (Unpackaged)": {
+        "commandName": "Project"
+      }
     }
-  }
 }

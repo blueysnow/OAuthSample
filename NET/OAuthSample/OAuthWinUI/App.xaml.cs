@@ -1,50 +1,102 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Shapes;
 
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using OAuthWinUI.Activation;
+using OAuthWinUI.Contracts.Services;
+using OAuthWinUI.Core.Contracts.Services;
+using OAuthWinUI.Core.Services;
+using OAuthWinUI.Helpers;
+using OAuthWinUI.Services;
+using OAuthWinUI.Services.CloudProviders;
+using OAuthWinUI.ViewModels;
+using OAuthWinUI.Views;
 
 namespace OAuthWinUI;
-/// <summary>
-/// Provides application-specific behavior to supplement the default Application class.
-/// </summary>
+
+// To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
 public partial class App : Application
 {
-    /// <summary>
-    /// Initializes the singleton application object.  This is the first line of authored code
-    /// executed, and as such is the logical equivalent of main() or WinMain().
-    /// </summary>
+    // The .NET Generic Host provides dependency injection, configuration, logging, and other services.
+    // https://docs.microsoft.com/dotnet/core/extensions/generic-host
+    // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
+    // https://docs.microsoft.com/dotnet/core/extensions/configuration
+    // https://docs.microsoft.com/dotnet/core/extensions/logging
+    public IHost Host
+    {
+        get;
+    }
+
+    public static T GetService<T>()
+        where T : class
+    {
+        if ((App.Current as App)!.Host.Services.GetService(typeof(T)) is not T service)
+        {
+            throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
+        }
+
+        return service;
+    }
+
+    public static WindowEx MainWindow { get; } = new MainWindow();
+
+    public static UIElement? AppTitlebar { get; set; }
+
     public App()
     {
-        this.InitializeComponent();
+        InitializeComponent();
+
+        Host = Microsoft.Extensions.Hosting.Host.
+        CreateDefaultBuilder().
+        UseContentRoot(AppContext.BaseDirectory).
+        ConfigureServices((context, services) =>
+        {
+            // Default Activation Handler
+            _ = services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
+
+            // Cloud Providers
+
+            _ = services.AddSingleton<DropBoxProvider>();
+            _ = services.AddSingleton<GoogleDriveProvider>();
+            _ = services.AddSingleton<OneDriveProvider>();
+
+            // Services
+            _ = services.AddTransient<INavigationViewService, NavigationViewService>();
+
+            _ = services.AddSingleton<IActivationService, ActivationService>();
+            _ = services.AddSingleton<IPageService, PageService>();
+            _ = services.AddSingleton<INavigationService, NavigationService>();
+
+            // Core Services
+            _ = services.AddSingleton<IFileService, FileService>();
+
+            // Views and ViewModels
+            _ = services.AddTransient<DropBoxViewModel>();
+            _ = services.AddTransient<DropBoxPage>();
+            _ = services.AddTransient<GoogleDriveViewModel>();
+            _ = services.AddTransient<GoogleDrivePage>();
+            _ = services.AddTransient<OneDriveViewModel>();
+            _ = services.AddTransient<OneDrivePage>();
+            _ = services.AddTransient<ShellPage>();
+            _ = services.AddTransient<ShellViewModel>();
+
+            // Configuration
+        }).
+        Build();
+
+        UnhandledException += App_UnhandledException;
     }
 
-    /// <summary>
-    /// Invoked when the application is launched.
-    /// </summary>
-    /// <param name="args">Details about the launch request and process.</param>
-    protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
-        m_window = new MainWindow();
-        m_window.Activate();
+        // TODO: Log and handle exceptions as appropriate.
+        // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
     }
 
-    private Window m_window;
+    protected async override void OnLaunched(LaunchActivatedEventArgs args)
+    {
+        base.OnLaunched(args);
+
+        await App.GetService<IActivationService>().ActivateAsync(args);
+    }
 }
