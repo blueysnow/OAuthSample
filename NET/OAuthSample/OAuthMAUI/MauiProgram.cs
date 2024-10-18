@@ -1,12 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 
+using OAuthMAUI.Services.CloudProviders;
+
 namespace OAuthMAUI;
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder
+        _ = builder
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
@@ -14,8 +16,13 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
+            // Cloud Providers
+        _ = builder.Services.AddSingleton<DropBoxProvider>();
+        _ = builder.Services.AddSingleton<GoogleDriveProvider>();
+        _ = builder.Services.AddSingleton<OneDriveProvider>();
+
 #if DEBUG
-		builder.Logging.AddDebug();
+		_ = builder.Logging.AddDebug();
 #endif
 
         return builder.Build();
