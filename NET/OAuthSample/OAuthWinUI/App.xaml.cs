@@ -4,9 +4,6 @@ using Microsoft.UI.Xaml;
 
 using OAuthWinUI.Activation;
 using OAuthWinUI.Contracts.Services;
-using OAuthWinUI.Core.Contracts.Services;
-using OAuthWinUI.Core.Services;
-using OAuthWinUI.Helpers;
 using OAuthWinUI.Services;
 using OAuthWinUI.Services.CloudProviders;
 using OAuthWinUI.ViewModels;
@@ -67,8 +64,7 @@ public partial class App : Application
             _ = services.AddSingleton<IPageService, PageService>();
             _ = services.AddSingleton<INavigationService, NavigationService>();
 
-            // Core Services
-            _ = services.AddSingleton<IFileService, FileService>();
+         
 
             // Views and ViewModels
             _ = services.AddTransient<DropBoxViewModel>();

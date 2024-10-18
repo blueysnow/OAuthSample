@@ -2,16 +2,13 @@
 using System.Diagnostics;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+
 using Dropbox.Api;
+
 using Faithlife.Utility;
 
-using Microsoft.Extensions.Options;
-
-using Newtonsoft.Json;
 using OAuthShared;
 
-using OAuthWinUI.Contracts.Services;
-using OAuthWinUI.Core.Contracts.Services;
 using OAuthWinUI.Services.CloudProviders.Helpers;
 
 namespace OAuthWinUI.Services.CloudProviders;
@@ -24,8 +21,8 @@ internal partial class DropBoxProvider : ObservableObject, ICloudProvider
 
     public static class DAuthenticationSettings
     {
-        public const string AppKey = "ova0vdjd2xim4jp";
-        public const string AppSecret = "6bnvsfcd82f7h17";
+        public const string AppKey = "<insert-app-key-here>";
+        public const string AppSecret = "<insert-app-secret-here>";
         public const string DesktopRedirectUri = "oauthdemoapp://";
     }
 
