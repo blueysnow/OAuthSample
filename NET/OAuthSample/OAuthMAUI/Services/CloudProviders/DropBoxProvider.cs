@@ -7,6 +7,7 @@ using OAuthShared;
 using System.Diagnostics;
 using System.Net;
 
+using Faithlife.Utility;
 using Newtonsoft.Json;
 
 namespace OAuthMAUI.Services.CloudProviders;
@@ -16,6 +17,7 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
 
     public DropBoxProvider()
     {
+        pKceoAuthFlow = new PKCEOAuthFlow();
         AuthenticationUrl = GenerateAuthenticationUrl();
         AuthenticationResponse = default;
         Client = default;
@@ -30,18 +32,18 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
     {
         public const string AppKey = "<insert-app-key-here>";
         public const string AppSecret = "<insert-app-secret-here>";
-        public const string RedirectUri = "oauthmaui://";
+        public const string RedirectUri = "https://eft-upward-bison.ngrok-free.app/oauth/dropbox/signin";
+        public const string DesktopRedirectUri = "oauthmaui://";
     }
 
     #endregion
 
     #region Private Fields
 
-    private const string DropBoxTokenResponseKey = "dropbox_token_response";
-
     [ObservableProperty]
-    [NotifyPropertyChangedRecipients]
     private UserDetails currentUser;
+
+    private PKCEOAuthFlow pKceoAuthFlow;
 
     #endregion
 
@@ -81,7 +83,8 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
                 return AuthenticationResponse;
             }
 
-            AuthenticationUrl ??= GenerateAuthenticationUrl();
+            AuthenticationUrl = GenerateAuthenticationUrl();
+            UriBuilder dropBoxRedirectUri = new(DAuthenticationSettings.RedirectUri);
 
             // encode the authentication url and pass it as a query to the web api url
             var encodedAuthUrl = WebUtility.UrlEncode(AuthenticationUrl);
@@ -90,24 +93,21 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
 #if WINDOWS
             var response = await WinUIEx.WebAuthenticator.AuthenticateAsync(new Uri(webApiUrl), new Uri(DAuthenticationSettings.RedirectUri), new CancellationTokenSource().Token);
 #else
-            var response = await WebAuthenticator.AuthenticateAsync(new Uri(webApiUrl), new Uri(DAuthenticationSettings.RedirectUri));
+            var response = await WebAuthenticator.AuthenticateAsync(new Uri(webApiUrl), new Uri(DAuthenticationSettings.DesktopRedirectUri));
 #endif
 
-            AuthenticationResponse = DropboxOAuth2Helper.ParseTokenFragment(response.CallbackUri);
+            var responseProps = response.Properties;
+            var hasCodeKey = responseProps.TryGetValue("code", out var codeValue);
+            var hasStateKey = responseProps.TryGetValue("state", out var stateValue);
+            if (!hasCodeKey || !hasStateKey)
+            {
+                return AuthenticationResponse;
+            }
+            _ = dropBoxRedirectUri.AppendQuery($"code={codeValue}");
+            _ = dropBoxRedirectUri.AppendQuery($"state={stateValue}");
+
+           AuthenticationResponse = await pKceoAuthFlow.ProcessCodeFlowAsync(dropBoxRedirectUri.Uri, DAuthenticationSettings.AppKey, DAuthenticationSettings.RedirectUri, OAuthToState);
             return AuthenticationResponse;
-            /*WebView webView = new()
-            {
-                Source = new UrlWebViewSource
-                {
-                    Url = AuthenticationUrl
-                }
-            };
-            webView.Navigating += WebViewNavigating;
-            ContentPage contentPage = new()
-            {
-                Content = webView
-            };
-            await Shell.Current.Navigation.PushModalAsync(contentPage);*/
         }
         catch (TaskCanceledException)
         {
@@ -137,7 +137,7 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
         {
             ArgumentNullException.ThrowIfNull(AuthenticationResponse);
             ArgumentException.ThrowIfNullOrWhiteSpace(AuthenticationResponse.AccessToken);
-            DateTime expiresAt = AuthenticationResponse.ExpiresAt ?? DateTime.Now;
+            var expiresAt = AuthenticationResponse.ExpiresAt ?? DateTime.Now;
 
 #if __ANDROID__
 			return new DropboxClient(AuthenticationResponse.AccessToken, AuthenticationResponse.RefreshToken, expiresAt, DAuthenticationSettings.AppKey, DAuthenticationSettings.AppSecret, new DropboxClientConfig()
@@ -161,7 +161,7 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
         try
         {
             OAuthToState = Guid.NewGuid().ToString("N");
-            Uri authorizeUri = DropboxOAuth2Helper.GetAuthorizeUri(OAuthResponseType.Token, DAuthenticationSettings.AppKey, new Uri(DAuthenticationSettings.RedirectUri), OAuthToState);
+            Uri authorizeUri = pKceoAuthFlow.GetAuthorizeUri(OAuthResponseType.Code, DAuthenticationSettings.AppKey, DAuthenticationSettings.RedirectUri, OAuthToState, tokenAccessType: TokenAccessType.Offline);
             return authorizeUri.AbsoluteUri;
         }
         catch (Exception exception)
@@ -169,60 +169,6 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
 
             Console.WriteLine(@"Obtaining DropBox Authentication URL Error " + exception.Message);
             throw;
-        }
-    }
-
-    private async void WebViewNavigating(object? sender, WebNavigatingEventArgs e)
-    {
-        if (!e.Url.StartsWith(DAuthenticationSettings.RedirectUri, StringComparison.OrdinalIgnoreCase))
-        {
-            // we need to ignore all navigation that isn't to the redirect uri.
-            return;
-        }
-
-        try
-        {
-            OAuth2Response result = DropboxOAuth2Helper.ParseTokenFragment(new Uri(e.Url));
-
-            if (result.State != OAuthToState)
-            {
-                return;
-            }
-
-            AuthenticationResponse = result;
-
-            Debug.WriteLine($"ACCESS TOKEN == {AuthenticationResponse.AccessToken}");
-
-            Debug.WriteLine($"REFRESH TOKEN == {AuthenticationResponse.RefreshToken}");
-            Debug.WriteLine($"EXPIRES AT == {AuthenticationResponse.ExpiresAt}");
-            Debug.WriteLine($"TOKEN TYPE == {AuthenticationResponse.TokenType}");
-            Debug.WriteLine($"Serialized Response == {JsonConvert.SerializeObject(AuthenticationResponse)})");
-
-            Client = CreateDropboxClient();
-
-            // Get Current user details
-            FullAccount dropboxUser = await Client.Users.GetCurrentAccountAsync();
-            CurrentUser = new UserDetails(dropboxUser.Name.DisplayName, dropboxUser.Name.DisplayName, dropboxUser.Name.GivenName, dropboxUser.Name.Surname, dropboxUser.Email);
-        }
-        catch (ArgumentException)
-        {
-            // There was an error in the URI passed to ParseTokenFragment
-            throw;
-        }
-        catch (InvalidOperationException)
-        {
-            // There was an error processing the response
-            throw;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-            throw;
-        }
-        finally
-        {
-            e.Cancel = true;
-            _ = await Shell.Current.Navigation.PopModalAsync();
         }
     }
 
@@ -245,6 +191,7 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
                     throw new Exception("AuthenticationURL is not generated !");
                 }
                 AuthenticationResponse = await AuthorizeDropbox();
+                Client = CreateDropboxClient();
             }
 
             if (Client is null)
@@ -254,7 +201,7 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
             }
 
             // Get Current user details
-            FullAccount dropboxUser = await Client.Users.GetCurrentAccountAsync();
+            var dropboxUser = await Client.Users.GetCurrentAccountAsync();
             CurrentUser = new UserDetails(dropboxUser.Name.DisplayName, dropboxUser.Name.DisplayName, dropboxUser.Name.GivenName, dropboxUser.Name.Surname, dropboxUser.Email);
 
             return true;

@@ -1,6 +1,6 @@
 // Paula Aliu
 // OAuthMAUI
-// DropBoxPage.xaml.cs
+// GoogleDrivePage.xaml.cs
 // 2024
 
 using System;
@@ -9,29 +9,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using CommunityToolkit.Mvvm.DependencyInjection;
-
 using OAuthMAUI.Services.CloudProviders;
 
 namespace OAuthMAUI;
 
-public partial class DropBoxPage : ContentPage
+public partial class GoogleDrivePage : ContentPage
 {
-    private readonly DropBoxProvider dropBoxProvider;
-    public DropBoxPage()
+    public GoogleDrivePage()
     {
         InitializeComponent();
-        dropBoxProvider = new DropBoxProvider();
+        googleDriveProvider = new GoogleDriveProvider();
     }
 
-    private async  void Login_OnClicked(object? sender, EventArgs e)
+    private readonly GoogleDriveProvider googleDriveProvider;
+
+    private async void Login_OnClicked(object? sender, EventArgs e)
     {
-        var isSignedIn = await dropBoxProvider.SignInAsync();
-        if(isSignedIn)
+        var isSignedIn = await googleDriveProvider.SignInAsync();
+        if (isSignedIn)
         {
             await DisplayAlert("Success", "You have successfully signed in", "Ok");
-            var user = await dropBoxProvider.GetUserDetailsAsync();
-            if(string.IsNullOrEmpty(user.DisplayName))
+            var user = await googleDriveProvider.GetUserDetailsAsync();
+            if (string.IsNullOrEmpty(user.DisplayName))
             {
                 await DisplayAlert("Error", "An error occurred while fetching user info", "Ok");
             }
@@ -48,7 +47,7 @@ public partial class DropBoxPage : ContentPage
 
     private async void LogOut_OnClicked(object? sender, EventArgs e)
     {
-        _ = await dropBoxProvider.SignOutAsync();
+        _ = await googleDriveProvider.SignOutAsync();
     }
 }
 

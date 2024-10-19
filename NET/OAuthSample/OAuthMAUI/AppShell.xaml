@@ -10,9 +10,12 @@
 	<TabBar>
 
 		<Tab Title="DropBox">
-			<ShellContent Title="Home"
-			              ContentTemplate="{DataTemplate local:DropBoxPage}" />
+			<ShellContent ContentTemplate="{DataTemplate local:DropBoxPage}"
 			              Route="DropBoxPage" />
+		</Tab>
+		<Tab Title="Google">
+			<ShellContent ContentTemplate="{DataTemplate local:MainPage}"
+			              Route="MainPage" />
 		</Tab>
 	</TabBar>
 </Shell>

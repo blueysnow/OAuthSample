@@ -2,25 +2,25 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="OAuthMAUI.DropBoxPage">
+             x:Class="OAuthMAUI.GoogleDrivePage">
 	<ContentPage.Content>
 		<VerticalStackLayout Spacing="15"
 		                     Padding="10"
 		                     HorizontalOptions="CenterAndExpand"
 		                     VerticalOptions="FillAndExpand">
-			<Label Text="DropBox"
+			<Label Text="Google Drive"
 			       HorizontalOptions="Center"
-			       FontSize="32"/>
+			       FontSize="32" />
 			<HorizontalStackLayout Spacing="15"
 			                       Padding="10">
-				<Button x:Name="Login" Text="Login"
+				<Button x:Name="Login"
+				        Text="Login"
 				        Clicked="Login_OnClicked" />
-				<Button x:Name="LogOut" Text="Logout"
+				<Button x:Name="LogOut"
+				        Text="Logout"
 				        Clicked="LogOut_OnClicked" />
 			</HorizontalStackLayout>
 			<Label Text="Status:" />
 		</VerticalStackLayout>
-
-
 	</ContentPage.Content>
 </ContentPage>
