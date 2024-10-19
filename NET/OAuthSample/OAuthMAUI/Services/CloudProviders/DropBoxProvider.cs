@@ -5,6 +5,8 @@ using Dropbox.Api.Users;
 
 using OAuthShared;
 using System.Diagnostics;
+using System.Net;
+
 using Newtonsoft.Json;
 
 namespace OAuthMAUI.Services.CloudProviders;
@@ -28,7 +30,7 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
     {
         public const string AppKey = "<insert-app-key-here>";
         public const string AppSecret = "<insert-app-secret-here>";
-        public const string RedirectUri = "<insert-redirect-uri-here>"; 
+        public const string RedirectUri = "oauthmaui://";
     }
 
     #endregion
@@ -68,7 +70,7 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
 
     #region Private Methods
 
-    private async Task AuthorizeDropbox()
+    private async Task<OAuth2Response?> AuthorizeDropbox()
     {
         try
         {
@@ -76,12 +78,24 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
             {
                 // Already authorized
                 //OnAuthenticated?.Invoke();
-                return;
+                return AuthenticationResponse;
             }
 
             AuthenticationUrl ??= GenerateAuthenticationUrl();
 
-            WebView webView = new()
+            // encode the authentication url and pass it as a query to the web api url
+            var encodedAuthUrl = WebUtility.UrlEncode(AuthenticationUrl);
+            var webApiUrl = $"https://eft-upward-bison.ngrok-free.app/oauth/dropbox?auth_uri={encodedAuthUrl}";
+
+#if WINDOWS
+            var response = await WinUIEx.WebAuthenticator.AuthenticateAsync(new Uri(webApiUrl), new Uri(DAuthenticationSettings.RedirectUri), new CancellationTokenSource().Token);
+#else
+            var response = await WebAuthenticator.AuthenticateAsync(new Uri(webApiUrl), new Uri(DAuthenticationSettings.RedirectUri));
+#endif
+
+            AuthenticationResponse = DropboxOAuth2Helper.ParseTokenFragment(response.CallbackUri);
+            return AuthenticationResponse;
+            /*WebView webView = new()
             {
                 Source = new UrlWebViewSource
                 {
@@ -93,7 +107,7 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
             {
                 Content = webView
             };
-            await Shell.Current.Navigation.PushModalAsync(contentPage);
+            await Shell.Current.Navigation.PushModalAsync(contentPage);*/
         }
         catch (TaskCanceledException)
         {
@@ -108,10 +122,12 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
             };
 
             Debug.WriteLine("DropBox Authentication Error " + response);
+            return null;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
+            return null;
         }
     }
 
@@ -228,7 +244,7 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
                 {
                     throw new Exception("AuthenticationURL is not generated !");
                 }
-                await AuthorizeDropbox();
+                AuthenticationResponse = await AuthorizeDropbox();
             }
 
             if (Client is null)

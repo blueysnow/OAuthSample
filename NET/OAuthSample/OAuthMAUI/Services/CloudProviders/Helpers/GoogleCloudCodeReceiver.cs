@@ -16,7 +16,7 @@ internal class GoogleCloudCodeReceiver : ICodeReceiver
             // encode the url parameter and pass it as a query to the web api url
             var encodedAuthUrl = WebUtility.UrlEncode(url.Build().AbsoluteUri);
 
-            var webApiUrl = $"https://eft-upward-bison.ngrok-free.app/mobileauth/google?auth_uri={encodedAuthUrl}";
+            var webApiUrl = $"https://eft-upward-bison.ngrok-free.app/oauth/google?auth_uri={encodedAuthUrl}";
 
 #if WINDOWS
             var response = await WinUIEx.WebAuthenticator.AuthenticateAsync(new Uri(webApiUrl), new Uri("oauthmaui://"), new CancellationTokenSource().Token);

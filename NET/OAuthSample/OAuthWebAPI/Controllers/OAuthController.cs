@@ -3,6 +3,9 @@
 using Microsoft.AspNetCore.Mvc;
 
 namespace OAuthWebAPI.Controllers;
+
+[ApiController]
+[Route("[controller]")]
 public class OAuthController : ControllerBase
 {
 	#region Private Field(s)
