@@ -17,5 +17,9 @@
 			<ShellContent ContentTemplate="{DataTemplate local:GoogleDrivePage}"
 			              Route="GoogleDrivePage" />
 		</Tab>
+		<Tab Title="OneDrive">
+			<ShellContent ContentTemplate="{DataTemplate local:OneDrivePage}"
+			              Route="OneDrivePage" />
+		</Tab>
 	</TabBar>
 </Shell>
