@@ -37,7 +37,7 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.22621.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -82,10 +82,10 @@
 	  </PackageReference>
 	</ItemGroup>
 
-	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
-		<CodesignKey>Apple Development: onotseike@outlook.com (6SQ97WKYTS)</CodesignKey>
-		<CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-		<ProvisioningType>automatic</ProvisioningType>
-	</PropertyGroup>
+<!--	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">-->
+<!--		<CodesignKey>Apple Development: onotseike@outlook.com (6SQ97WKYTS)</CodesignKey>-->
+<!--		<CodesignEntitlements>Entitlements.plist</CodesignEntitlements>-->
+<!--		<ProvisioningType>automatic</ProvisioningType>-->
+<!--	</PropertyGroup>-->
 
 </Project>
