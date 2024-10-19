@@ -7,7 +7,8 @@ using Google.Apis.Auth.OAuth2.Responses;
 namespace OAuthMAUI.Services.CloudProviders.Helpers;
 internal class GoogleCloudCodeReceiver : ICodeReceiver
 {
-    public string RedirectUri => "<insert-redirect-uri>";
+    public string RedirectUri => "https://eft-upward-bison.ngrok-free.app/oauth/google/signin";
+
 
     public async Task<AuthorizationCodeResponseUrl> ReceiveCodeAsync(AuthorizationCodeRequestUrl url, CancellationToken taskCancellationToken)
     {

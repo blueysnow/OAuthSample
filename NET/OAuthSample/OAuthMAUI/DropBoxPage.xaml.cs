@@ -48,7 +48,15 @@ public partial class DropBoxPage : ContentPage
 
     private async void LogOut_OnClicked(object? sender, EventArgs e)
     {
-        _ = await dropBoxProvider.SignOutAsync();
+        var isSignedOut = await dropBoxProvider.SignOutAsync();
+        if (isSignedOut)
+        {
+            await DisplayAlert("Success", "You have successfully signed out", "Ok");
+        }
+        else
+        {
+            await DisplayAlert("Error", "An error occurred while signing out", "Ok");
+        }
     }
 }
 

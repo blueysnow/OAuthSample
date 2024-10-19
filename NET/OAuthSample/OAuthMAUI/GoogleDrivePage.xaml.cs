@@ -47,7 +47,15 @@ public partial class GoogleDrivePage : ContentPage
 
     private async void LogOut_OnClicked(object? sender, EventArgs e)
     {
-        _ = await googleDriveProvider.SignOutAsync();
+        var isSignedOut = await googleDriveProvider.SignOutAsync();
+        if (isSignedOut)
+        {
+            await DisplayAlert("Success", "You have successfully signed out", "Ok");
+        }
+        else
+        {
+            await DisplayAlert("Error", "An error occurred while signing out", "Ok");
+        }
     }
 }
 
