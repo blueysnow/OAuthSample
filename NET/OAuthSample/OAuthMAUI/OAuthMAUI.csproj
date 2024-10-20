@@ -57,6 +57,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiImage Include="Resources\Images\CloudProviders\dropbox.png" />
+	  <MauiImage Include="Resources\Images\CloudProviders\googledrive.png" />
+	  <MauiImage Include="Resources\Images\CloudProviders\icloud.png" />
+	  <MauiImage Include="Resources\Images\CloudProviders\onedrive.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui.Core" Version="9.1.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
 		<PackageReference Include="Dropbox.Api" Version="7.0.0" />

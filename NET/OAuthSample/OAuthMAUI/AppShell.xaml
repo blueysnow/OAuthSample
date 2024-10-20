@@ -8,16 +8,15 @@
        Title="OAuthMAUI">
 
 	<TabBar>
-
-		<Tab Title="DropBox">
-			<ShellContent ContentTemplate="{DataTemplate local:DropBoxPage}"
+        <Tab Title="DROPBOX">
+            <ShellContent ContentTemplate="{DataTemplate local:DropBoxPage}"
 			              Route="DropBoxPage" />
 		</Tab>
-		<Tab Title="Google">
+		<Tab Title="GOOGLEDRIVE">
 			<ShellContent ContentTemplate="{DataTemplate local:GoogleDrivePage}"
 			              Route="GoogleDrivePage" />
 		</Tab>
-		<Tab Title="OneDrive">
+		<Tab Title="ONEDRIVE">
 			<ShellContent ContentTemplate="{DataTemplate local:OneDrivePage}"
 			              Route="OneDrivePage" />
 		</Tab>

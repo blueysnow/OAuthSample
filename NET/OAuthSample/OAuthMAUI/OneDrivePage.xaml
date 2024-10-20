@@ -8,19 +8,20 @@
 		                     Padding="10"
 		                     HorizontalOptions="CenterAndExpand"
 		                     VerticalOptions="FillAndExpand">
-			<Label Text="OneDrive"
-			       HorizontalOptions="Center"
-			       FontSize="32" />
-			<HorizontalStackLayout Spacing="15"
-			                       Padding="10">
-				<Button x:Name="Login"
-				        Text="Login"
-				        Clicked="Login_OnClicked" />
-				<Button x:Name="LogOut"
-				        Text="Logout"
-				        Clicked="LogOut_OnClicked" />
-			</HorizontalStackLayout>
-			<Label Text="Status:" />
-		</VerticalStackLayout>
+            <Image Source="onedrive.png"
+                   WidthRequest="100"
+                   HeightRequest="100" />
+            <HorizontalStackLayout Spacing="15"
+                                   Padding="10">
+                <Button x:Name="Login"
+                        Background="DeepSkyBlue"
+                        Text="Login"
+                        Clicked="Login_OnClicked" />
+                <Button x:Name="LogOut"
+                        Background="ForestGreen"
+                        Text="Logout"
+                        Clicked="LogOut_OnClicked" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
 	</ContentPage.Content>
 </ContentPage>
