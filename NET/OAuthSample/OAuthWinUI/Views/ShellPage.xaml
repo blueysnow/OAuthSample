@@ -45,17 +45,23 @@
                 -->
                 <NavigationViewItem x:Uid="Shell_OneDrive" helpers:NavigationHelper.NavigateTo="OAuthWinUI.ViewModels.OneDriveViewModel">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe7c3;"/>
+                        <ImageIcon Height="32"
+                                   Width="32"
+                                   Source="ms-appx:///Assets/CloudProviders/onedrive.png" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem x:Uid="Shell_GoogleDrive" helpers:NavigationHelper.NavigateTo="OAuthWinUI.ViewModels.GoogleDriveViewModel">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe7c3;"/>
+                        <ImageIcon Height="32"
+                                   Width="32"
+                                   Source="ms-appx:///Assets/CloudProviders/googledrive.png" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem x:Uid="Shell_DropBox" helpers:NavigationHelper.NavigateTo="OAuthWinUI.ViewModels.DropBoxViewModel">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe7c3;"/>
+                        <ImageIcon Height="32"
+                                   Width="32"
+                                   Source="ms-appx:///Assets/CloudProviders/dropbox.png" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>

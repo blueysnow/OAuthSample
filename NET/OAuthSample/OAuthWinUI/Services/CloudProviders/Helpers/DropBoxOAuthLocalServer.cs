@@ -66,7 +66,7 @@ internal class DropBoxOAuthLocalServer : IDisposable
                 }
                 var queryStrings = redirectUri.Query[1..].Split('&').Select(x => x.Split('=')).ToDictionary(x => Uri.UnescapeDataString(x[0]), x => Uri.UnescapeDataString(x[1]));
 
-                var responseUri = new UriBuilder("oauthdemoapp://");
+                var responseUri = new UriBuilder("oauthwinui://");
                 foreach (var query in queryStrings)
                 {
                     Debug.WriteLine($"{query.Key} = {query.Value}");

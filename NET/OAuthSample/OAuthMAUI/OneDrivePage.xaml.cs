@@ -23,7 +23,6 @@ public partial class OneDrivePage : ContentPage
         oneDriveProvider = new OneDriveProvider();
     }
 
-
     private async void Login_OnClicked(object? sender, EventArgs e)
     {
         var isSignedIn = await oneDriveProvider.SignInAsync();

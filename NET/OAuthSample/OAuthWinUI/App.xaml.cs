@@ -41,6 +41,8 @@ public partial class App : Application
 
     public App()
     {
+        if (WebAuthenticator.CheckOAuthRedirectionActivation())
+            return;
         InitializeComponent();
 
         Host = Microsoft.Extensions.Hosting.Host.

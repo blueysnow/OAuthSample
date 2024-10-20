@@ -23,7 +23,7 @@ internal partial class DropBoxProvider : ObservableObject, ICloudProvider
     {
         public const string AppKey = "<insert-app-key-here>";
         public const string AppSecret = "<insert-app-secret-here>";
-        public const string DesktopRedirectUri = "oauthdemoapp://";
+        public const string DesktopRedirectUri = "oauthwinui://";
     }
 
     #endregion
@@ -185,6 +185,8 @@ internal partial class DropBoxProvider : ObservableObject, ICloudProvider
         {
             return false;
         }
+        var dropboxUser = await Client.Users.GetCurrentAccountAsync();
+        CurrentUser = new UserDetails(dropboxUser.Name.DisplayName, dropboxUser.Name.DisplayName, dropboxUser.Name.GivenName, dropboxUser.Name.Surname, dropboxUser.Email);
         return true;
     }
 

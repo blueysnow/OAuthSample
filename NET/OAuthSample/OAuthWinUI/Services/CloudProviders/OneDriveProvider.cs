@@ -18,8 +18,8 @@ internal partial class OneDriveProvider : ObservableObject, ICloudProvider, IAut
 
     protected static class OAuthenticationSettings
     {
-        public const string ClientId = "<insert-client-id- here>";
-        public const string TenantId = "common"; 
+        public const string ClientId = "15afedda-afd1-4b8b-a572-56df47e1211e"; // < insert-client-id-here>";
+        public const string TenantId = "common";
         public const string RedirectUri = "http://localhost";
 
         public static readonly string[] Scopes =
