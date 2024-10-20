@@ -35,8 +35,8 @@
 		<PackageReference Include="Google.Apis.Oauth2.v2" Version="1.68.0.1869" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Graph" Version="5.61.0" />
-		<PackageReference Include="Microsoft.Identity.Client" Version="4.65.0" />
-		<PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.65.0" />
+		<PackageReference Include="Microsoft.Identity.Client" Version="4.66.0" />
+		<PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.66.0" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240923002" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
 		<PackageReference Include="WinUIEx" Version="2.4.2" />
