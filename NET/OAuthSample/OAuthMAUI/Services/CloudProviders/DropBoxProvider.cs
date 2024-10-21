@@ -91,7 +91,7 @@ internal partial class DropBoxProvider : ObservableRecipient, ICloudProvider
             var webApiUrl = $"https://eft-upward-bison.ngrok-free.app/oauth/dropbox?auth_uri={encodedAuthUrl}";
 
 #if WINDOWS
-            var response = await WinUIEx.WebAuthenticator.AuthenticateAsync(new Uri(webApiUrl), new Uri(DAuthenticationSettings.RedirectUri), new CancellationTokenSource().Token);
+            var response = await WinUIEx.WebAuthenticator.AuthenticateAsync(new Uri(webApiUrl), new Uri(DAuthenticationSettings.DesktopRedirectUri), new CancellationTokenSource().Token);
 #else
             var response = await WebAuthenticator.AuthenticateAsync(new Uri(webApiUrl), new Uri(DAuthenticationSettings.DesktopRedirectUri));
 #endif
