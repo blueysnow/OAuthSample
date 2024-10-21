@@ -18,7 +18,11 @@ internal class OneDriveProvider : ICloudProvider, IAuthenticationProvider
     {
         public const string ClientId = "15afedda-afd1-4b8b-a572-56df47e1211e"; // < insert-client-id-here>";
         public const string TenantId = "common";
-        public const string RedirectUri = $"msal{ClientId}://auth"; // "http://localhost";
+#if WINDOWS
+        public const string RedirectUri = "http://localhost";
+#else
+        public const string RedirectUri = $"msal{ClientId}://auth";
+#endif
 
         public static readonly string[] Scopes =
         [
@@ -35,7 +39,7 @@ internal class OneDriveProvider : ICloudProvider, IAuthenticationProvider
         
     }
 
-    #endregion
+#endregion
 
     #region Constructor(s)
 
@@ -158,17 +162,11 @@ internal class OneDriveProvider : ICloudProvider, IAuthenticationProvider
             PublicClientApplicationBuilder builder = PublicClientApplicationBuilder
                 .Create(OAuthenticationSettings.ClientId)
 #if IOS || IPADOS
-				.WithIosKeychainSecurityGroup(OAuthenticationSettings.IosKeyChainSecurityGroup)
-				.WithRedirectUri(OAuthenticationSettings.RedirectUri);
+				.WithIosKeychainSecurityGroup(OAuthenticationSettings.IosKeyChainSecurityGroup)		
 #elif ANDROID
                 .WithParentActivityOrWindow(() => Platform.CurrentActivity)
-                .WithRedirectUri(OAuthenticationSettings.RedirectUri);
-#elif MACCATALYST
-				.WithRedirectUri("http://localhost");
-#else
-			.WithRedirectUri("https://login.microsoftonline.com/common/oauth2/nativeclient");
 #endif
-
+                .WithRedirectUri(OAuthenticationSettings.RedirectUri);
             IPublicClientApplication pca = builder.Build();
 
             await RegisterMsalCacheAsync(pca.UserTokenCache);
@@ -193,7 +191,9 @@ internal class OneDriveProvider : ICloudProvider, IAuthenticationProvider
             IPublicClientApplication pca = await publicClientApplication.Value;
 
             AuthenticationResult result = await pca.AcquireTokenInteractive(OAuthenticationSettings.Scopes)
+#if ANDROID || IOS || IPADOS
                 .WithUseEmbeddedWebView(true)
+#endif
                 .ExecuteAsync();
 
             // Store the user ID to make account retrieval easier
@@ -249,7 +249,7 @@ internal class OneDriveProvider : ICloudProvider, IAuthenticationProvider
         }
     }
 
-    #endregion
+#endregion
 
     #region ICloudProvider Implementation
 

@@ -3,6 +3,7 @@
 using CommunityToolkit.Maui.Core;
 
 using OAuthMAUI.Services.CloudProviders;
+using Microsoft.Maui.LifecycleEvents;
 
 namespace OAuthMAUI;
 public static class MauiProgram
@@ -19,13 +20,25 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-            // Cloud Providers
-        _ = builder.Services.AddSingleton<DropBoxProvider>();
-        _ = builder.Services.AddSingleton<GoogleDriveProvider>();
-        _ = builder.Services.AddSingleton<OneDriveProvider>();
+#if WINDOWS
+        _ = builder.ConfigureLifecycleEvents(events =>
+        {
+            events.AddWindows(windows =>
+                {
+                    windows.OnWindowCreated(windows =>
+                    {
+                        var manager = WinUIEx.WindowManager.Get(windows);
+                        manager.PersistenceId = "MainWindowPersistenceId";
+                        if (WinUIEx.WebAuthenticator.CheckOAuthRedirectionActivation())
+                            return;
+
+                    });
+                });
+        });
+#endif
 
 #if DEBUG
-		_ = builder.Logging.AddDebug();
+        _ = builder.Logging.AddDebug();
 #endif
 
         return builder.Build();

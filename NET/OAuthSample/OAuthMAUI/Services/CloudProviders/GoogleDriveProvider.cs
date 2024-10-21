@@ -43,10 +43,10 @@ internal class GoogleDriveProvider : ICloudProvider
     {
         try
         {
-            const string clientId = GdAuthenticationSettings.WebApplicationClientId;
-            const string clientSecret = GdAuthenticationSettings.WebApplicationClientSecret;
-            var applicationName = DeviceInfo.Current.Idiom == DeviceIdiom.Desktop ? GdAuthenticationSettings.WebApplicationName : Path.Combine(FileSystem.Current.CacheDirectory, GdAuthenticationSettings.WebApplicationName);
-            ICodeReceiver codeReceiver = new GoogleCloudCodeReceiver();
+            var clientId = DeviceInfo.Current.Platform == DevicePlatform.WinUI ? GdAuthenticationSettings.DesktopClientId : GdAuthenticationSettings.WebApplicationClientId;
+            var clientSecret = DeviceInfo.Current.Platform == DevicePlatform.WinUI ? GdAuthenticationSettings.DesktopClientSecret : GdAuthenticationSettings.WebApplicationClientSecret;
+            var applicationName = DeviceInfo.Current.Platform == DevicePlatform.WinUI ? GdAuthenticationSettings.DesktopApplicationName : Path.Combine(FileSystem.Current.CacheDirectory, GdAuthenticationSettings.WebApplicationName);
+            ICodeReceiver? codeReceiver = DeviceInfo.Current.Platform == DevicePlatform.WinUI ? null : new GoogleCloudCodeReceiver();
 
             var credentials = await GoogleWebAuthorizationBroker.AuthorizeAsync(
                 new ClientSecrets
@@ -57,7 +57,7 @@ internal class GoogleDriveProvider : ICloudProvider
                 scopes,
                 "user",
                 CancellationToken.None,
-                new FileDataStore(applicationName, DeviceInfo.Current.Idiom != DeviceIdiom.Desktop),
+                new FileDataStore(applicationName, DeviceInfo.Current.Platform != DevicePlatform.WinUI),
                 codeReceiver);
             return credentials;
         }
